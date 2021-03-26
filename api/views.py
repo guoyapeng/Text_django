@@ -48,7 +48,7 @@ def get_provinces_2_1(request: HttpRequest) -> HttpResponse:
 
 @api_view(("GET",))
 def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
-    queryset = District.objects.filter(parent__isnull=True)
+    queryset = District.objects.filter(parent__isnull=True).only('distid', 'name')
     serializer = DistrictSimpleSerializers(queryset, many=True).data
 
     return Response({

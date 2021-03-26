@@ -9,4 +9,7 @@ urlpatterns = [
     path('districts_2_1/', get_provinces_2_1),
     path('districts_2_2/', get_provinces_2_2),
 
+    # 视图类的序列化方式，接口实现方式和返回方式测试
+
+
 ]

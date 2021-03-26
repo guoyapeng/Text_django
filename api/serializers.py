@@ -19,7 +19,7 @@ class DistrictDetailSerializerd(serializers.ModelSerializer):
 
     @staticmethod
     def get_cities(district):
-        quseryset = District.objects.filter(parent=district)
+        quseryset = District.objects.filter(parent=district).only('name')
         return DistrictSimpleSerializers(quseryset, many=True).data
 
     class Meta:

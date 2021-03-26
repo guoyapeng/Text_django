@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 
@@ -20,3 +21,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls'))
 ]
+
+
+# # 调试工具栏
+if settings.DEBUG:          # 如果项目处于debug模式
+    import debug_toolbar    # 则导入django_debug_toolbar模块
+    urlpatterns.insert(0, path('__debug__/', include(debug_toolbar.urls)))

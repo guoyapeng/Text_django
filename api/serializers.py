@@ -12,3 +12,16 @@ class DistrictDetailSerializers(serializers.ModelSerializer):
     class Meta:
         model = District
         exclude = ('parent',)
+
+
+class DistrictDetailSerializerd(serializers.ModelSerializer):
+    cities = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_cities(district):
+        quseryset = District.objects.filter(parent=district)
+        return DistrictSimpleSerializers(quseryset, many=True).data
+
+    class Meta:
+        model = District
+        exclude = ('parent',)

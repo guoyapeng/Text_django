@@ -4,7 +4,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers
+from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd
 from common.models import District
 
 
@@ -60,8 +60,17 @@ def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
 
 @api_view(("GET",))
 def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
-    # 查询某个地区的详情，以及其下一级行政区域
+    # 查询某个指定地区的详情
     district = District.objects.filter(distid=distid).defer('parent').first()
     serializer = DistrictDetailSerializers(district).data
+
+    return Response(serializer)
+
+
+@api_view(("GET",))
+def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
+    # 查询某个指定地区的详情，以及其下一级行政区域
+    district = District.objects.filter(distid=distid).defer('parent').first()
+    serializer = DistrictDetailSerializerd(district).data
 
     return Response(serializer)

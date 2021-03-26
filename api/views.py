@@ -1,10 +1,13 @@
 import json
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from api.serializers import DistrictSimpleSerializers
 from common.models import District
 
 
-# Create your views here.
 def get_provinces_1_1(request: HttpRequest) -> HttpResponse:
     queryset = District.objects.filter(parent__isnull=True)
 
@@ -30,3 +33,26 @@ def get_provinces_1_2(request: HttpRequest) -> HttpResponse:
         })
 
     return JsonResponse(provinces, safe=False)
+
+
+def get_provinces_2_1(request: HttpRequest) -> HttpResponse:
+    queryset = District.objects.filter(parent__isnull=True)
+    serializer = DistrictSimpleSerializers(queryset, many=True).data
+
+    return JsonResponse({
+        'code': 10000,
+        'message': '获取省级行政区域成功',
+        'results': serializer
+    })
+
+
+@api_view(("GET",))
+def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
+    queryset = District.objects.filter(parent__isnull=True)
+    serializer = DistrictSimpleSerializers(queryset, many=True).data
+
+    return Response({
+        'code': 10000,
+        'message': '获取省级行政区域成功',
+        'results': serializer
+    })

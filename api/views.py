@@ -2,10 +2,12 @@ import json
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd
-from common.models import District
+from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
+    AgentSimpleSerializer
+from common.models import District, Agent
 
 
 def get_provinces_1_1(request: HttpRequest) -> HttpResponse:
@@ -74,3 +76,28 @@ def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
     serializer = DistrictDetailSerializerd(district).data
 
     return Response(serializer)
+
+
+# 类视图。继承父类实现
+class AgentView(ListAPIView):
+    queryset = Agent.objects.all().only('name', 'tel', 'servstar')
+    serializer_class = AgentSimpleSerializer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

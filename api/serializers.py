@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from common.models import District
+from common.models import District, Agent
 
 
 class DistrictSimpleSerializers(serializers.ModelSerializer):
@@ -25,3 +25,9 @@ class DistrictDetailSerializerd(serializers.ModelSerializer):
     class Meta:
         model = District
         exclude = ('parent',)
+
+
+class AgentSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agent
+        fields = ('agentid', 'name', 'tel', 'servstar')

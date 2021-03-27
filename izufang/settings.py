@@ -75,6 +75,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'izufang.wsgi.application'
 
+
+# DRF分页的配置
+REST_FRAMEWORK = {
+    # 配置默认每页加载的数据量三条
+    'PAGE_SIZE': 3,
+    # 配置分页类。指定默认的分页类
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 

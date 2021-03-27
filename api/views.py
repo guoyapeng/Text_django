@@ -6,7 +6,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdate
 from rest_framework.response import Response
 
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
-    AgentSimpleSerializer
+    AgentSimpleSerializer, AgentCreateSerializer
 from common.models import District, Agent
 
 
@@ -109,12 +109,9 @@ class AgentView_LC_RU(ListCreateAPIView, RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
 
+    def get_serializer_class(self):
+        return AgentCreateSerializer if self.request.method == "POST" else AgentSimpleSerializer
+
     def get(self, request, *args, **kwargs):
         cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView
         return cls.get(self, request, *args, **kwargs)
-
-
-
-
-
-

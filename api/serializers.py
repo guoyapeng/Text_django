@@ -31,3 +31,9 @@ class AgentSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agent
         fields = ('agentid', 'name', 'tel', 'servstar')
+
+
+class AgentCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agent
+        exclude = ('estates',)

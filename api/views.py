@@ -128,12 +128,14 @@ class AgentView_LC_RU_02(ListCreateAPIView, RetrieveUpdateAPIView):
 
 
 # 类视图。查询列表+新增、查询单个+更新 及联查询
-class AgentView_LC_RU_03(ListCreateAPIView, RetrieveUpdateAPIView):
+class AgentView_LC_RU_03(RetrieveUpdateAPIView, ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Agent.objects.all()
         if 'pk' not in self.kwargs:
             queryset = queryset.only('name', 'tel', 'servstar')
+        else:
+            queryset = queryset.prefetch_related('estates')
         return queryset
 
     def get_serializer_class(self):
@@ -151,6 +153,3 @@ class AgentView_LC_RU_03(ListCreateAPIView, RetrieveUpdateAPIView):
 class HouseTypeViewSet(ModelViewSet):
     queryset = HouseType.objects.all()
     serializer_class = HouseTypeSerializer
-
-
-

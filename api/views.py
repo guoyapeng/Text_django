@@ -4,10 +4,11 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
-    AgentSimpleSerializer, AgentCreateSerializer, AgentDetailSerializer
-from common.models import District, Agent
+    AgentSimpleSerializer, AgentCreateSerializer, AgentDetailSerializer, HouseTypeSerializer
+from common.models import District, Agent, HouseType
 
 
 def get_provinces_1_1(request: HttpRequest) -> HttpResponse:
@@ -144,3 +145,12 @@ class AgentView_LC_RU_03(ListCreateAPIView, RetrieveUpdateAPIView):
     def get(self, request, *args, **kwargs):
         cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView
         return cls.get(self, request, *args, **kwargs)
+
+
+# 类视图集。增加、删除、修改、查找+查单个查列表
+class HouseTypeViewSet(ModelViewSet):
+    queryset = HouseType.objects.all()
+    serializer_class = HouseTypeSerializer
+
+
+

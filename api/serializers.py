@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from common.models import District, Agent, Estate
+from common.models import District, Agent, Estate, HouseType
 
 
 class DistrictSimpleSerializers(serializers.ModelSerializer):
@@ -56,3 +56,9 @@ class EstateSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Estate
         fields = ('estateid', 'name')
+
+
+class HouseTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HouseType
+        fields = '__all__'

@@ -2,7 +2,7 @@ import json
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
 
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
@@ -102,3 +102,19 @@ class AgentViewd(RetrieveAPIView):
 class AgentViewRU(RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
+
+
+# 类视图，查询列表+新增、查询单个+更新
+class AgentView_LC_RU(ListCreateAPIView, RetrieveUpdateAPIView):
+    queryset = Agent.objects.all().only('name', 'tel', 'servstar')
+    serializer_class = AgentSimpleSerializer
+
+    def get(self, request, *args, **kwargs):
+        cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView
+        return cls.get(self, request, *args, **kwargs)
+
+
+
+
+
+

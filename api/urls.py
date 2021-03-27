@@ -13,11 +13,13 @@ urlpatterns = [
     path('district/<int:distid>/', get_provinces),
     path('districtd/<int:distid>/', get_provinced),
 
-    # 视图类的序列化方式，接口实现方式和返回方式测试
+    # 视图父类的序列化方式，接口实现方式和返回方式测试
     path('agent/', AgentViews.as_view()),
     path('agent/<int:pk>', AgentViewd.as_view()),
     path('agentRu/<int:pk>', AgentViewRU.as_view()),
 
     path('agent_LC_RU/', AgentView_LC_RU.as_view()),
     path('agent_LC_RU/<int:pk>', AgentView_LC_RU.as_view()),
+
+    #
 ]

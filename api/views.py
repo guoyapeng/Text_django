@@ -2,7 +2,7 @@ import json
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
@@ -78,13 +78,13 @@ def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
     return Response(serializer)
 
 
-# 类视图。继承父类实现
-class AgentView(ListAPIView):
+# 类视图。继承父类实现列表对象查询
+class AgentViews(ListAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
 
     def get(self, request, *args, **kwargs):
-        resp = super(AgentView, self).get(request, *args, **kwargs)
+        resp = super(AgentViews, self).get(request, *args, **kwargs)
         return Response({
             'code': 10000,
             'message': '获取经理人成功',
@@ -92,11 +92,10 @@ class AgentView(ListAPIView):
         })
 
 
-
-
-
-
-
+# 类视图。继承父类实现单个对象查询
+class AgentViewd(RetrieveAPIView):
+    queryset = Agent.objects.all().only('name','tel','servstar')
+    serializer_class = AgentSimpleSerializer
 
 
 

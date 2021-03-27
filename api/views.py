@@ -107,7 +107,6 @@ class AgentViewRU(RetrieveUpdateAPIView):
 # 类视图，查询列表+新增、查询单个+更新
 class AgentView_LC_RU(ListCreateAPIView, RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
-    serializer_class = AgentSimpleSerializer
 
     def get_serializer_class(self):
         return AgentCreateSerializer if self.request.method == "POST" else AgentSimpleSerializer

@@ -83,9 +83,13 @@ class AgentView(ListAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
 
-
-
-
+    def get(self, request, *args, **kwargs):
+        resp = super(AgentView, self).get(request, *args, **kwargs)
+        return Response({
+            'code': 10000,
+            'message': '获取经理人成功',
+            'results': resp.data
+        })
 
 
 

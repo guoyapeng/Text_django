@@ -14,5 +14,5 @@ urlpatterns = [
     path('districtd/<int:distid>/', get_provinced),
 
     # 视图类的序列化方式，接口实现方式和返回方式测试
-    path('agent/', AgentView.as_view())
+    path('agent/', AgentView.as_view()),
 ]

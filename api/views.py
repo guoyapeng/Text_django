@@ -78,13 +78,13 @@ def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
     return Response(serializer)
 
 
-# 类视图。继承父类实现列表对象查询
-class AgentViews(ListAPIView):
+# 类视图。查询所有
+class AgentView_L(ListAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
 
     def get(self, request, *args, **kwargs):
-        resp = super(AgentViews, self).get(request, *args, **kwargs)
+        resp = super(AgentView_L, self).get(request, *args, **kwargs)
         return Response({
             'code': 10000,
             'message': '获取经理人成功',
@@ -92,20 +92,30 @@ class AgentViews(ListAPIView):
         })
 
 
-# 类视图。继承父类实现单个对象查询
-class AgentViewd(RetrieveAPIView):
+# 类视图。查询单个
+class AgentView_R(RetrieveAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
 
 
-# 类视图。查询、更新
-class AgentViewRU(RetrieveUpdateAPIView):
+# 类视图。查询单个+更新
+class AgentView_RU(RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
 
 
-# 类视图，查询列表+新增、查询单个+更新
-class AgentView_LC_RU(ListCreateAPIView, RetrieveUpdateAPIView):
+# 类视图。查询列表+新增、查询单个+更新
+class AgentView_LC_RU_01(ListCreateAPIView, RetrieveUpdateAPIView):
+    queryset = Agent.objects.all().only('name', 'tel', 'servstar')
+    serializer_class = AgentSimpleSerializer
+
+    def get(self, request, *args, **kwargs):
+        cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView
+        return cls.get(self, request, *args, **kwargs)
+
+
+# 类视图。查询列表+新增、查询单个+更新
+class AgentView_LC_RU_02(ListCreateAPIView, RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
 
     def get_serializer_class(self):

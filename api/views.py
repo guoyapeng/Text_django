@@ -2,7 +2,7 @@ import json
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
@@ -94,5 +94,11 @@ class AgentViews(ListAPIView):
 
 # 类视图。继承父类实现单个对象查询
 class AgentViewd(RetrieveAPIView):
+    queryset = Agent.objects.all().only('name', 'tel', 'servstar')
+    serializer_class = AgentSimpleSerializer
+
+
+# 类视图。查询、更新
+class AgentViewRU(RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer

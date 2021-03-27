@@ -1,7 +1,7 @@
 from django.urls import path
 
 from api.views import get_provinces_1_1, get_provinces_1_2, get_provinces_2_1, get_provinces_2_2, get_provinces, \
-    get_provinced, AgentViews, AgentViewd
+    get_provinced, AgentViews, AgentViewd, AgentViewRU
 
 urlpatterns = [
     # 视图函数的序列化方式，接口实现方式和返回方式测试
@@ -15,5 +15,7 @@ urlpatterns = [
 
     # 视图类的序列化方式，接口实现方式和返回方式测试
     path('agent/', AgentViews.as_view()),
-    path('agent/<int:pk>', AgentViewd.as_view())
+    path('agent/<int:pk>', AgentViewd.as_view()),
+    path('agentRu/<int:pk>', AgentViewRU.as_view()),
+
 ]

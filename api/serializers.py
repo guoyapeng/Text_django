@@ -44,7 +44,7 @@ class AgentDetailSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_estates(agent):
-        queryset = agent.estates.all().only('name')
+        queryset = agent.estates.all() # .only('name') 注意：解决1+N查询问题后，序列化器这里不能再做任何处理了
         return EstateSimpleSerializer(queryset, many=True).data
 
     class Meta:

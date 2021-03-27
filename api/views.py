@@ -6,7 +6,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdate
 from rest_framework.response import Response
 
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
-    AgentSimpleSerializer, AgentCreateSerializer
+    AgentSimpleSerializer, AgentCreateSerializer, AgentDetailSerializer
 from common.models import District, Agent
 
 
@@ -120,6 +120,26 @@ class AgentView_LC_RU_02(ListCreateAPIView, RetrieveUpdateAPIView):
 
     def get_serializer_class(self):
         return AgentCreateSerializer if self.request.method == "POST" else AgentSimpleSerializer
+
+    def get(self, request, *args, **kwargs):
+        cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView
+        return cls.get(self, request, *args, **kwargs)
+
+
+# 类视图。查询列表+新增、查询单个+更新 及联查询
+class AgentView_LC_RU_03(ListCreateAPIView, RetrieveUpdateAPIView):
+
+    def get_queryset(self):
+        queryset = Agent.objects.all()
+        if 'pk' not in self.kwargs:
+            queryset = queryset.only('name', 'tel', 'servstar')
+        return queryset
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return AgentCreateSerializer
+        else:
+            return AgentDetailSerializer if "pk" in self.kwargs else AgentSimpleSerializer
 
     def get(self, request, *args, **kwargs):
         cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView

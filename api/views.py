@@ -153,3 +153,4 @@ class AgentView_LC_RU_03(RetrieveUpdateAPIView, ListCreateAPIView):
 class HouseTypeViewSet(ModelViewSet):
     queryset = HouseType.objects.all()
     serializer_class = HouseTypeSerializer
+    pagination_class = None  # 禁止此接口分页

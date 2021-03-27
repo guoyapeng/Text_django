@@ -94,13 +94,5 @@ class AgentViews(ListAPIView):
 
 # 类视图。继承父类实现单个对象查询
 class AgentViewd(RetrieveAPIView):
-    queryset = Agent.objects.all().only('name','tel','servstar')
+    queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
-
-
-
-
-
-
-
-

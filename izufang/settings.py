@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'sk70$(kqz4n)96)^ua#unt7oam9#*2@$bj13rv+@m*@tt%=et@'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -81,7 +79,9 @@ REST_FRAMEWORK = {
     # 配置默认每页加载的数据量三条
     'PAGE_SIZE': 3,
     # 配置分页类。指定默认的分页类
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 配置分页类。指定自定义分页类
+    'DEFAULT_PAGINATION_CLASS': 'api.helper.CustomPagination',
 }
 
 
@@ -132,17 +132,15 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
-
 # 调试工具栏
-DEBUG_TOOLBAR_CONFIG = {	                  # debug_toolbar
+DEBUG_TOOLBAR_CONFIG = {  # debug_toolbar
     # 引入jquery库
     'JQUERY_URL': 'https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js',
-    'SHOW_COLLAPSED': True,                   # 工具栏是否折叠
+    'SHOW_COLLAPSED': True,  # 工具栏是否折叠
     'SHOW_TOOLBAR_CALLBACK': lambda x: True,  # 是否显示工具栏
 }

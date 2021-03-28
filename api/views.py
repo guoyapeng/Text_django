@@ -2,6 +2,7 @@ import json
 
 from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
@@ -159,6 +160,8 @@ class AgentView_LC_RU_03(RetrieveUpdateAPIView, ListCreateAPIView):
 
 
 # 类视图集。增加、删除、修改、查找+查单个查列表
+@method_decorator(decorator=cache_page(timeout=86400), name='list')
+@method_decorator(decorator=cache_page(timeout=86400), name='retrieve')
 class HouseTypeViewSet(ModelViewSet):
     queryset = HouseType.objects.all()
     serializer_class = HouseTypeSerializer

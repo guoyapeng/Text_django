@@ -3,7 +3,7 @@ from rest_framework.routers import SimpleRouter
 
 from api.views import get_provinces_1_1, get_provinces_1_2, get_provinces_2_1, get_provinces_2_2, get_provinces, \
     get_provinced, AgentView_LC_RU_02, AgentView_LC_RU_01, AgentView_L, AgentView_RU, AgentView_R, AgentView_LC_RU_03, \
-    HouseTypeViewSet, EstateViewSet
+    HouseTypeViewSet, EstateViewSet, districts
 
 urlpatterns = [
     # 视图函数的序列化方式，接口实现方式和返回方式测试
@@ -27,6 +27,10 @@ urlpatterns = [
     path('agent_LC_RU_02/<int:pk>', AgentView_LC_RU_02.as_view()),
     path('agent_LC_RU_03/', AgentView_LC_RU_03.as_view()),
     path('agent_LC_RU_03/<int:pk>', AgentView_LC_RU_03.as_view()),
+
+
+    # 编程式缓存的第二种实现方式。调用原生redis连接
+    path('districts/<int:distid>', districts),
 
 ]
 

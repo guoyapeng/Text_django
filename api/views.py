@@ -1,10 +1,12 @@
 import json
+import pickle
 
 from django.core.cache import cache, caches
 from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django_redis import get_redis_connection
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
@@ -80,7 +82,7 @@ def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
 
 @api_view(("GET",))
 def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
-    # 第一种编程式缓存方式
+    """第一种编程式缓存方式"""
     district = caches['default'].get(f'district:{distid}')
     if district is None:
         # 查询某个指定地区的详情，以及其下一级行政区域。加缓存后框架还会有两次自动查询SQL的请求
@@ -189,3 +191,18 @@ class EstateViewSet(ReadOnlyModelViewSet):
 
     def get_serializer_class(self):
         return EstateDetailSerializer if self.action == 'retrieve' else EstateSimpleSerializer
+
+
+@api_view(("GET",))
+def districts(request: HttpRequest, distid: int) -> HttpResponse:
+    """ 编程式缓存的第二种实现方式。调用原生redis连接"""
+    redis_cli = get_redis_connection()
+    data = redis_cli.get(f'izufang:district:{distid}')
+    if data:
+        district = pickle.loads(data)
+    else:
+        district = District.objects.filter(distid=distid).first()
+        data = pickle.dumps(district)
+        redis_cli.set(f'izufang:district:{distid}', data)
+    serializer = DistrictDetailSerializerd(district).data
+    return Response(serializer)

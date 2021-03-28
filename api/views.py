@@ -57,6 +57,7 @@ def get_provinces_2_1(request: HttpRequest) -> HttpResponse:
     })
 
 
+# 声明式缓存
 @cache_page(timeout=30)
 @api_view(("GET",))
 def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
@@ -70,6 +71,7 @@ def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
     })
 
 
+# 声明式缓存
 @cache_page(timeout=30)
 @api_view(("GET",))
 def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
@@ -80,6 +82,7 @@ def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
     return Response(serializer)
 
 
+# 编程式缓存
 @api_view(("GET",))
 def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
     """第一种编程式缓存方式"""
@@ -193,6 +196,7 @@ class EstateViewSet(ReadOnlyModelViewSet):
         return EstateDetailSerializer if self.action == 'retrieve' else EstateSimpleSerializer
 
 
+# 编程式缓存
 @api_view(("GET",))
 def districts(request: HttpRequest, distid: int) -> HttpResponse:
     """ 编程式缓存的第二种实现方式。调用原生redis连接"""

@@ -1,11 +1,13 @@
 import json
 
+from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
+from api.helper import AgentCursorPagination
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
     AgentSimpleSerializer, AgentCreateSerializer, AgentDetailSerializer, HouseTypeSerializer, EstateSimpleSerializer, \
     EstateDetailSerializer
@@ -130,14 +132,17 @@ class AgentView_LC_RU_02(ListCreateAPIView, RetrieveUpdateAPIView):
 
 # 类视图。查询列表+新增、查询单个+更新 及联查询
 class AgentView_LC_RU_03(RetrieveUpdateAPIView, ListCreateAPIView):
+    # 游标分页设置
+    pagination_class = AgentCursorPagination
 
     def get_queryset(self):
         queryset = Agent.objects.all()
         if 'pk' not in self.kwargs:
             queryset = queryset.only('name', 'tel', 'servstar')
         else:
-            queryset = queryset.prefetch_related('estates')
-        return queryset
+            queryset = queryset.prefetch_related(
+                Prefetch('estates', queryset=Estate.objects.all().only('name').order_by('-hot')))
+        return queryset.order_by('-servstar')
 
     def get_serializer_class(self):
         if self.request.method == "POST":

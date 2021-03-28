@@ -169,6 +169,8 @@ class HouseTypeViewSet(ModelViewSet):
 
 
 # 类视图集。定义只读接口
+@method_decorator(decorator=cache_page(timeout=86400), name='list')
+@method_decorator(decorator=cache_page(timeout=86400), name='retrieve')
 class EstateViewSet(ReadOnlyModelViewSet):
     queryset = Estate.objects.all()
 

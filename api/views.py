@@ -2,6 +2,7 @@ import json
 
 from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
@@ -52,6 +53,7 @@ def get_provinces_2_1(request: HttpRequest) -> HttpResponse:
     })
 
 
+@cache_page(timeout=30)
 @api_view(("GET",))
 def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
     queryset = District.objects.filter(parent__isnull=True).only('distid', 'name')

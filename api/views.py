@@ -66,6 +66,7 @@ def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
     })
 
 
+@cache_page(timeout=30)
 @api_view(("GET",))
 def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
     # 查询某个指定地区的详情

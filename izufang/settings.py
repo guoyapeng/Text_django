@@ -88,6 +88,7 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# 数据库配置
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -98,6 +99,23 @@ DATABASES = {
         'PASSWORD': '123456',
         'CHARSET': 'utf8',
         'TIME_ZONE': 'Asia/Shanghai',
+    },
+}
+
+# 缓存库配置
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': [
+            'redis://127.0.0.1:6379/0',
+        ],
+        'KEY_PREFIX': 'izufang',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 2048,
+            },
+        }
     },
 }
 

@@ -202,7 +202,6 @@ def districts(request: HttpRequest, distid: int) -> HttpResponse:
         district = pickle.loads(data)
     else:
         district = District.objects.filter(distid=distid).first()
-        data = pickle.dumps(district)
-        redis_cli.set(f'izufang:district:{distid}', data)
+        redis_cli.set(f'izufang:district:{distid}', pickle.dumps(district))
     serializer = DistrictDetailSerializerd(district).data
     return Response(serializer)

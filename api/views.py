@@ -4,11 +4,12 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
-    AgentSimpleSerializer, AgentCreateSerializer, AgentDetailSerializer, HouseTypeSerializer
-from common.models import District, Agent, HouseType
+    AgentSimpleSerializer, AgentCreateSerializer, AgentDetailSerializer, HouseTypeSerializer, EstateSimpleSerializer, \
+    EstateDetailSerializer
+from common.models import District, Agent, HouseType, Estate
 
 
 def get_provinces_1_1(request: HttpRequest) -> HttpResponse:
@@ -154,3 +155,19 @@ class HouseTypeViewSet(ModelViewSet):
     queryset = HouseType.objects.all()
     serializer_class = HouseTypeSerializer
     pagination_class = None  # 禁止此接口分页
+
+
+# 类视图集。定义只读接口
+class EstateViewSet(ReadOnlyModelViewSet):
+    queryset = Estate.objects.all()
+
+    def get_queryset(self):
+        if self.action == 'list':
+            queryset = self.queryset.only('name')
+        else:
+            queryset = self.queryset.defer('district__parent', 'district__ishot', 'district__intro').select_related(
+                'district')
+        return queryset
+
+    def get_serializer_class(self):
+        return EstateDetailSerializer if self.action == 'retrieve' else EstateSimpleSerializer

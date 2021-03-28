@@ -58,6 +58,14 @@ class EstateSimpleSerializer(serializers.ModelSerializer):
         fields = ('estateid', 'name')
 
 
+class EstateDetailSerializer(serializers.ModelSerializer):
+    district = DistrictSimpleSerializers()
+
+    class Meta:
+        model = Estate
+        fields = '__all__'
+
+
 class HouseTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = HouseType

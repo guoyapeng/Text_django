@@ -6,6 +6,7 @@ from django.db.models import Prefetch
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
 from django_redis import get_redis_connection
 from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
@@ -218,6 +219,9 @@ class EstateViewSet(ReadOnlyModelViewSet):
 
     # 用自定义限流类实现对该接口的限流设置
     throttle_classes = (CustomThrottle,)
+    # 用第三方模块类实现对该接口的高级筛选
+    filter_backends = (DjangoFilterBackend,)     # 配置过滤器。元组类型
+    filter_fields = ('name', 'hot', 'district')  # 配筛选条件。元组类型
 
     def get_queryset(self):
         if self.action == 'list':

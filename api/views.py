@@ -13,7 +13,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdate
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from api.helper import AgentCursorPagination, CustomThrottle
+from api.helper import AgentCursorPagination, CustomThrottle, EstateFilterSet
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
     AgentSimpleSerializer, AgentCreateSerializer, AgentDetailSerializer, HouseTypeSerializer, EstateSimpleSerializer, \
     EstateDetailSerializer
@@ -219,9 +219,12 @@ class EstateViewSet(ReadOnlyModelViewSet):
 
     # 用自定义限流类实现对该接口的限流设置
     throttle_classes = (CustomThrottle,)
+
     # 用第三方模块类实现对该接口的高级筛选
-    filter_backends = (DjangoFilterBackend,)     # 配置过滤器。元组类型
-    filter_fields = ('name', 'hot', 'district')  # 配筛选条件。元组类型
+    filter_backends = (DjangoFilterBackend,)       # 配置过滤器。元组类型
+
+    # filter_fields = ('name', 'hot', 'district')  # 配筛选条件。元组类型
+    filterset_class = EstateFilterSet              # 指定自定义类，实现条件筛选
 
     def get_queryset(self):
         if self.action == 'list':

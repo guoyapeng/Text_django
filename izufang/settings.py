@@ -89,7 +89,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {     # 默认限流速率
         'anon': '30/min',           # 匿名游客访问限制。每分钟30次
         'user': '10000/day',        # 登陆用户访问限制。每天10000
-        'foo': '10/min'             # 自定义限流类的限流速率
+        'foo': '10/min',            # 自定义限流类的限流速率
     }
 
 }

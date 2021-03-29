@@ -224,7 +224,9 @@ class EstateViewSet(ReadOnlyModelViewSet):
     # 用第三方模块类实现对该接口的高级筛选
     # filter_backends = (DjangoFilterBackend,)                      # 配置过滤器。元组类型
     filter_backends = (DjangoFilterBackend, OrderingFilter)         # 配置过滤器。结果排序。元组类型
-    ordering = '-hot'                                               # 默认根据楼盘热度降序
+
+    ordering = '-hot'                                # 默认根据楼盘热度降序
+    ordering_fields = ('district', 'hot', 'name')    # 还可以根据这些字段排序
 
     # filter_fields = ('name', 'hot', 'district')    # 配筛选条件。元组类型
     filterset_class = EstateFilterSet                # 指定自定义类，实现条件筛选

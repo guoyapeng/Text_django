@@ -19,6 +19,7 @@ from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers
 from common.models import District, Agent, HouseType, Estate
 
 
+# 序列化：手动
 def get_provinces_1_1(request: HttpRequest) -> HttpResponse:
     queryset = District.objects.filter(parent__isnull=True)
 
@@ -33,6 +34,7 @@ def get_provinces_1_1(request: HttpRequest) -> HttpResponse:
     return HttpResponse(data, content_type='application/json; charset=utf-8')
 
 
+# 序列化：函数
 def get_provinces_1_2(request: HttpRequest) -> HttpResponse:
     queryset = District.objects.filter(parent__isnull=True)
 
@@ -46,6 +48,7 @@ def get_provinces_1_2(request: HttpRequest) -> HttpResponse:
     return JsonResponse(provinces, safe=False)
 
 
+# 序列化：自定义
 def get_provinces_2_1(request: HttpRequest) -> HttpResponse:
     queryset = District.objects.filter(parent__isnull=True)
     serializer = DistrictSimpleSerializers(queryset, many=True).data
@@ -57,7 +60,7 @@ def get_provinces_2_1(request: HttpRequest) -> HttpResponse:
     })
 
 
-# 声明式缓存
+# 序列化：自定义。缓存：声明式
 @cache_page(timeout=30)
 @api_view(("GET",))
 def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
@@ -71,7 +74,7 @@ def get_provinces_2_2(request: HttpRequest) -> HttpResponse:
     })
 
 
-# 声明式缓存
+# 序列化：自定义。缓存：声明式
 @cache_page(timeout=30)
 @api_view(("GET",))
 def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
@@ -82,7 +85,7 @@ def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
     return Response(serializer)
 
 
-# 编程式缓存+自定义限流
+# 序列化：自定义。缓存：编程式方式一。限流：自定义
 @throttle_classes((CustomThrottle,))
 @api_view(("GET",))
 def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
@@ -145,7 +148,7 @@ class AgentView_LC_RU_02(ListCreateAPIView, RetrieveUpdateAPIView):
         return cls.get(self, request, *args, **kwargs)
 
 
-# 类视图。查询列表+新增、查询单个+更新 及联查询
+# 类视图。查询列表+新增、查询单个+更新 及联查询。分页：游标分页
 class AgentView_LC_RU_03(RetrieveUpdateAPIView, ListCreateAPIView):
     # 游标分页设置
     pagination_class = AgentCursorPagination
@@ -170,7 +173,7 @@ class AgentView_LC_RU_03(RetrieveUpdateAPIView, ListCreateAPIView):
         return cls.get(self, request, *args, **kwargs)
 
 
-# 类视图集。增加、删除、修改、查找+查单个查列表
+# 类视图集。增加、删除、修改、查单个查列表。分页：禁止分页。缓存：声明式
 @method_decorator(decorator=cache_page(timeout=86400), name='list')
 @method_decorator(decorator=cache_page(timeout=86400), name='retrieve')
 class HouseTypeViewSet(ModelViewSet):
@@ -179,7 +182,7 @@ class HouseTypeViewSet(ModelViewSet):
     pagination_class = None  # 禁止此接口分页
 
 
-# 类视图集。定义只读接口、自定义限流
+# 类视图集。只读。分页：默认分页。缓存：声明式。限流：自定义
 @method_decorator(decorator=cache_page(timeout=86400), name='list')
 @method_decorator(decorator=cache_page(timeout=86400), name='retrieve')
 class EstateViewSet(ReadOnlyModelViewSet):
@@ -200,7 +203,7 @@ class EstateViewSet(ReadOnlyModelViewSet):
         return EstateDetailSerializer if self.action == 'retrieve' else EstateSimpleSerializer
 
 
-# 编程式缓存
+# 序列化：自定义。缓存：编程式方式二
 @api_view(("GET",))
 def districts(request: HttpRequest, distid: int) -> HttpResponse:
     """ 编程式缓存的第二种实现方式。调用原生redis连接"""

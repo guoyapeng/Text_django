@@ -29,6 +29,7 @@ class AgentCursorPagination(CursorPagination):
 
 
 class EstateFilterSet(filterset.FilterSet):
+    """重写父类方法，自定义筛选方式"""
     name = filterset.CharFilter(lookup_expr='startswith')
     minhot = filterset.NumberFilter(field_name='hot', lookup_expr='gte')
     maxhot = filterset.NumberFilter(field_name='hot', lookup_expr='lte')

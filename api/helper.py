@@ -1,4 +1,17 @@
+from abc import ABC
+
 from rest_framework.pagination import PageNumberPagination, CursorPagination
+from rest_framework.throttling import SimpleRateThrottle
+
+
+class CustomThrottle(SimpleRateThrottle):
+    """重写父类方法，自定义限流策略"""
+    scope = 'foo'
+
+    def get_cache_key(self, request, view):
+        pass
+
+
 
 
 class CustomPagination(PageNumberPagination):

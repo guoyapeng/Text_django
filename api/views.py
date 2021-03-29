@@ -100,7 +100,7 @@ def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
     return Response(serializer)
 
 
-# 类视图。查询所有
+# 类视图。查询所有。分页：默认分页
 class AgentView_L(ListAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
@@ -114,19 +114,19 @@ class AgentView_L(ListAPIView):
         })
 
 
-# 类视图。查询单个
+# 类视图。查询单个。分页：默认分页
 class AgentView_R(RetrieveAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
 
 
-# 类视图。查询单个+更新
+# 类视图。查询单个+更新。分页：默认分页
 class AgentView_RU(RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
 
 
-# 类视图。查询列表+新增、查询单个+更新
+# 类视图。查询列表+新增、查询单个+更新。分页：默认分页
 class AgentView_LC_RU_01(ListCreateAPIView, RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
     serializer_class = AgentSimpleSerializer
@@ -136,7 +136,7 @@ class AgentView_LC_RU_01(ListCreateAPIView, RetrieveUpdateAPIView):
         return cls.get(self, request, *args, **kwargs)
 
 
-# 类视图。查询列表+新增、查询单个+更新
+# 类视图。查询列表+新增、查询单个+更新。分页：默认分页
 class AgentView_LC_RU_02(ListCreateAPIView, RetrieveUpdateAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
 
@@ -216,3 +216,27 @@ def districts(request: HttpRequest, distid: int) -> HttpResponse:
         redis_cli.set(f'izufang:district:{distid}', pickle.dumps(district))
     serializer = DistrictDetailSerializerd(district).data
     return Response(serializer)
+
+
+# 筛选：接口数据高级筛选
+class AgentView(RetrieveUpdateAPIView, ListCreateAPIView):
+
+    def get_queryset(self):
+        queryset = Agent.objects.all()
+        if 'pk' not in self.kwargs:
+            queryset = queryset.only('name', 'tel', 'servstar')
+        else:
+            queryset = queryset.prefetch_related(
+                Prefetch('estates', queryset=Estate.objects.all().only('name').order_by('-hot')))
+        return queryset.order_by('-servstar')
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return AgentCreateSerializer
+        else:
+            return AgentDetailSerializer if "pk" in self.kwargs else AgentSimpleSerializer
+
+    def get(self, request, *args, **kwargs):
+        cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView
+        return cls.get(self, request, *args, **kwargs)
+

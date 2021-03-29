@@ -218,11 +218,16 @@ def districts(request: HttpRequest, distid: int) -> HttpResponse:
     return Response(serializer)
 
 
-# 筛选：接口数据高级筛选
+# 类视图。查询列表+新增、查询单个+更新 及联查询。分页：默认分页。筛选：高级筛选方式一
 class AgentView(RetrieveUpdateAPIView, ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Agent.objects.all()
+
+        name = self.request.GET.get('name')
+        if name:
+            queryset = queryset.filter(name__startswith=name)
+
         if 'pk' not in self.kwargs:
             queryset = queryset.only('name', 'tel', 'servstar')
         else:

@@ -211,7 +211,7 @@ class HouseTypeViewSet(ModelViewSet):
     pagination_class = None  # 禁止此接口分页
 
 
-# 类视图集。只读。分页：默认分页。缓存：声明式。限流：自定义。筛选：高级筛选方式二
+# 类视图集。只读。分页：默认分页。缓存：声明式。限流：自定义。筛选：高级筛选方式二(1,2,3)
 @method_decorator(decorator=cache_page(timeout=86400), name='list')
 @method_decorator(decorator=cache_page(timeout=86400), name='retrieve')
 class EstateViewSet(ReadOnlyModelViewSet):

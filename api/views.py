@@ -9,6 +9,7 @@ from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from django_redis import get_redis_connection
 from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -221,10 +222,12 @@ class EstateViewSet(ReadOnlyModelViewSet):
     throttle_classes = (CustomThrottle,)
 
     # 用第三方模块类实现对该接口的高级筛选
-    filter_backends = (DjangoFilterBackend,)       # 配置过滤器。元组类型
+    # filter_backends = (DjangoFilterBackend,)                      # 配置过滤器。元组类型
+    filter_backends = (DjangoFilterBackend, OrderingFilter)         # 配置过滤器。结果排序。元组类型
+    ordering = '-hot'                                               # 默认根据楼盘热度降序
 
-    # filter_fields = ('name', 'hot', 'district')  # 配筛选条件。元组类型
-    filterset_class = EstateFilterSet              # 指定自定义类，实现条件筛选
+    # filter_fields = ('name', 'hot', 'district')    # 配筛选条件。元组类型
+    filterset_class = EstateFilterSet                # 指定自定义类，实现条件筛选
 
     def get_queryset(self):
         if self.action == 'list':

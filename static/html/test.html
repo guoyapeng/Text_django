@@ -35,11 +35,49 @@
         </el-select>
 
     </div>
-
+    <div id="app2">
+         <el-table :data="agents" style="width: 60%">
+            <el-table-column
+                    prop="agentid"
+                    label="编号"
+                    width="80">
+            </el-table-column>
+            <el-table-column
+                    prop="name"
+                    label="姓名"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="tel"
+                    label="电话"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="servstar"
+                    label="服务星级"
+                    width="180">
+                 <el-template slot-scope="scope">
+                    <el-rate
+                            disabled
+                            v-model="scope.row.servstar"
+                            :colors="['#ffc0c0', '#ffa0a0', '#ff0000']">
+                    </el-rate>
+                </el-template>
+            </el-table-column>
+        </el-table>
+        <el-pagination
+                layout="prev, pager, next"
+                page-size="5"
+                :total="count"
+                @current-change="handleCurrentChange"
+                @prev-click="loadData(prevPage)"
+                @next-click="loadData(nextPage)">
+        </el-pagination>
+    </div>
     <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script>
-        new Vue({
+        const app1 = new Vue({
             el: '#app1',
             data: {
                 provId: null,
@@ -74,6 +112,36 @@
             }
         })
     </script>
-
+    <script>
+        const app2 = new Vue({
+            el: '#app2',
+            data: {
+                count: 0,
+                agents: [],
+                nextPage: null,
+                prevPage: null,
+            },
+            created() {
+                this.loadData('/api/agent_LC_RU_02/')
+            },
+            methods: {
+                handleCurrentChange(currentPage) {
+                    this.loadData('/api/agent_LC_RU_02/?page=' + currentPage)
+                },
+                loadData(url) {
+                    if (url) {
+                        fetch(url)
+                            .then(resp => resp.json())
+                            .then(json => {
+                                this.agents = json.results
+                                this.count = json.count
+                                this.nextPage = json.next
+                                this.prevPage = json.previous
+                            })
+                    }
+                }
+            }
+        })
+    </script>
 </body>
 </html>

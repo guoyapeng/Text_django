@@ -173,6 +173,34 @@ class AgentView_LC_RU_03(RetrieveUpdateAPIView, ListCreateAPIView):
         return cls.get(self, request, *args, **kwargs)
 
 
+# 类视图。查询列表+新增、查询单个+更新 及联查询。分页：默认分页。筛选：高级筛选方式一
+class AgentView(RetrieveUpdateAPIView, ListCreateAPIView):
+
+    def get_queryset(self):
+        queryset = Agent.objects.all()
+
+        name = self.request.GET.get('name')
+        if name:
+            queryset = queryset.filter(name__startswith=name)
+
+        if 'pk' not in self.kwargs:
+            queryset = queryset.only('name', 'tel', 'servstar')
+        else:
+            queryset = queryset.prefetch_related(
+                Prefetch('estates', queryset=Estate.objects.all().only('name').order_by('-hot')))
+        return queryset.order_by('-servstar')
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return AgentCreateSerializer
+        else:
+            return AgentDetailSerializer if "pk" in self.kwargs else AgentSimpleSerializer
+
+    def get(self, request, *args, **kwargs):
+        cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView
+        return cls.get(self, request, *args, **kwargs)
+
+
 # 类视图集。增加、删除、修改、查单个查列表。分页：禁止分页。缓存：声明式
 @method_decorator(decorator=cache_page(timeout=86400), name='list')
 @method_decorator(decorator=cache_page(timeout=86400), name='retrieve')
@@ -182,7 +210,7 @@ class HouseTypeViewSet(ModelViewSet):
     pagination_class = None  # 禁止此接口分页
 
 
-# 类视图集。只读。分页：默认分页。缓存：声明式。限流：自定义
+# 类视图集。只读。分页：默认分页。缓存：声明式。限流：自定义。筛选：高级筛选方式二
 @method_decorator(decorator=cache_page(timeout=86400), name='list')
 @method_decorator(decorator=cache_page(timeout=86400), name='retrieve')
 class EstateViewSet(ReadOnlyModelViewSet):
@@ -217,31 +245,4 @@ def districts(request: HttpRequest, distid: int) -> HttpResponse:
     serializer = DistrictDetailSerializerd(district).data
     return Response(serializer)
 
-
-# 类视图。查询列表+新增、查询单个+更新 及联查询。分页：默认分页。筛选：高级筛选方式一
-class AgentView(RetrieveUpdateAPIView, ListCreateAPIView):
-
-    def get_queryset(self):
-        queryset = Agent.objects.all()
-
-        name = self.request.GET.get('name')
-        if name:
-            queryset = queryset.filter(name__startswith=name)
-
-        if 'pk' not in self.kwargs:
-            queryset = queryset.only('name', 'tel', 'servstar')
-        else:
-            queryset = queryset.prefetch_related(
-                Prefetch('estates', queryset=Estate.objects.all().only('name').order_by('-hot')))
-        return queryset.order_by('-servstar')
-
-    def get_serializer_class(self):
-        if self.request.method == "POST":
-            return AgentCreateSerializer
-        else:
-            return AgentDetailSerializer if "pk" in self.kwargs else AgentSimpleSerializer
-
-    def get(self, request, *args, **kwargs):
-        cls = RetrieveUpdateAPIView if 'pk' in kwargs else ListCreateAPIView
-        return cls.get(self, request, *args, **kwargs)
 

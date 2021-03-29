@@ -74,14 +74,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'izufang.wsgi.application'
 
 
-# DRF分页的配置
+# DRF配置
 REST_FRAMEWORK = {
-    # 配置默认每页加载的数据量三条
-    'PAGE_SIZE': 3,
-    # 配置分页类。指定默认的分页类
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 配置分页类。指定自定义分页类
-    'DEFAULT_PAGINATION_CLASS': 'api.helper.CustomPagination',
+    # 分页配置
+    'PAGE_SIZE': 3,                                             # 配置默认每页加载的数据量三条
+    'DEFAULT_PAGINATION_CLASS': 'api.helper.CustomPagination',  # 配置分页类。指定自定义分页类
+
+    # 限流配置
+    'DEFAULT_THROTTLE_CLASSES': (                      # 默认限流类
+        'rest_framework.throttling.AnonRateThrottle',  # 匿名游客限流类
+        'rest_framework.throttling.UserRateThrottle',  # 登陆用户限流类
+    ),
+    'DEFAULT_THROTTLE_RATES': {     # 默认限流速率
+        'anon': '30/min',           # 匿名游客访问限制。每分钟30次
+        'user': '10000/day',        # 登陆用户访问限制。每天10000
+    }
+
 }
 
 

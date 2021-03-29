@@ -7,12 +7,12 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_redis import get_redis_connection
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from api.helper import AgentCursorPagination
+from api.helper import AgentCursorPagination, CustomThrottle
 from api.serializers import DistrictSimpleSerializers, DistrictDetailSerializers, DistrictDetailSerializerd, \
     AgentSimpleSerializer, AgentCreateSerializer, AgentDetailSerializer, HouseTypeSerializer, EstateSimpleSerializer, \
     EstateDetailSerializer
@@ -82,7 +82,8 @@ def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
     return Response(serializer)
 
 
-# 编程式缓存
+# 编程式缓存+自定义限流
+@throttle_classes((CustomThrottle,))
 @api_view(("GET",))
 def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
     """第一种编程式缓存方式"""
@@ -178,11 +179,14 @@ class HouseTypeViewSet(ModelViewSet):
     pagination_class = None  # 禁止此接口分页
 
 
-# 类视图集。定义只读接口
+# 类视图集。定义只读接口、自定义限流
 @method_decorator(decorator=cache_page(timeout=86400), name='list')
 @method_decorator(decorator=cache_page(timeout=86400), name='retrieve')
 class EstateViewSet(ReadOnlyModelViewSet):
     queryset = Estate.objects.all()
+
+    # 用自定义限流类实现对该接口的限流设置
+    throttle_classes = (CustomThrottle,)
 
     def get_queryset(self):
         if self.action == 'list':

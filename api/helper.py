@@ -9,7 +9,7 @@ class CustomThrottle(SimpleRateThrottle):
     scope = 'foo'
 
     def get_cache_key(self, request, view):
-        pass
+        return request.method  # 返回限流缓存key
 
 
 class CustomPagination(PageNumberPagination):

@@ -6,7 +6,7 @@ from common.utils import gen_captcha_text
 
 
 def index(request):
-    return redirect('/static/html/index.html')
+    return redirect('/static/html/test.html')
 
 
 def get_captcha(request):

@@ -78,12 +78,6 @@ def login(request):
     return resp
 
 
-@method_decorator(decorator=cache_page(timeout=86400), name='get')
-class ProvincesView(ListAPIView):
-    queryset = District.objects.filter(parent__isnull=True).only('name')
-    serializer_class = DistrictSimpleSerializer(queryset, many=True)
-
-
 @api_view(('GET',))
 def get_district(request, distid):
     """获取地区详情"""
@@ -97,6 +91,12 @@ def get_district(request, distid):
         data = DistrictDetailSerializer(district).data
         redis_cli.set(f'zufang:district:{distid}', ujson.dumps(data), ex=900)
     return Response(data)
+
+
+@method_decorator(decorator=cache_page(timeout=86400), name='get')
+class ProvincesView(ListAPIView):
+    queryset = District.objects.filter(parent__isnull=True).only('name')
+    serializer_class = DistrictSimpleSerializer(queryset, many=True)
 
 
 @method_decorator(decorator=cache_page(timeout=86400), name='get')

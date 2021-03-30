@@ -91,7 +91,6 @@ def get_provinces(request: HttpRequest, distid: int) -> HttpResponse:
 @throttle_classes((CustomThrottle,))
 @api_view(("GET",))
 def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
-    """第一种编程式缓存方式"""
     district = caches['default'].get(f'district:{distid}')
     if district is None:
         # 查询某个指定地区的详情，以及其下一级行政区域。加缓存后框架还会有两次自动查询SQL的请求

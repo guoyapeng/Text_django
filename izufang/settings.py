@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'api',
+    'api_app',
     'common',
 ]
 
@@ -58,8 +59,7 @@ ROOT_URLCONF = 'izufang.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,7 +92,15 @@ REST_FRAMEWORK = {
         'user': '10000/day',        # 登陆用户访问限制。每天10000
         'foo': '5/min',             # 自定义限流类的限流速率
     }
+}
 
+
+# 调试工具栏
+DEBUG_TOOLBAR_CONFIG = {  # debug_toolbar
+    # 引入jquery库
+    'JQUERY_URL': 'https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js',
+    'SHOW_COLLAPSED': True,  # 工具栏是否折叠
+    'SHOW_TOOLBAR_CALLBACK': lambda x: True,  # 是否显示工具栏
 }
 
 
@@ -167,10 +175,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
-# 调试工具栏
-DEBUG_TOOLBAR_CONFIG = {  # debug_toolbar
-    # 引入jquery库
-    'JQUERY_URL': 'https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js',
-    'SHOW_COLLAPSED': True,  # 工具栏是否折叠
-    'SHOW_TOOLBAR_CALLBACK': lambda x: True,  # 是否显示工具栏
-}
+

@@ -214,14 +214,14 @@ class HouseInfoViewSet(ModelViewSet):
     def get_queryset(self):
         if self.action == 'list':
             return self.queryset \
-                .only('houseid', 'title', 'area', 'floor', 'totalfloor', 'price',
-                      'mainphoto', 'priceunit', 'street', 'type',
+                .only('houseid', 'title', 'area', 'floor', 'totalfloor',
+                      'price', 'mainphoto', 'priceunit', 'street', 'type',
                       'district_level3__distid', 'district_level3__name') \
                 .select_related('district_level3', 'type') \
                 .prefetch_related('tags')
         return self.queryset \
-            .defer('user', 'district_level2',
-                   'district_level3__parent', 'district_level3__ishot', 'district_level3__intro',
+            .defer('user', 'district_level2', 'district_level3__parent',
+                   'district_level3__ishot', 'district_level3__intro',
                    'estate__district', 'estate__hot', 'estate__intro',
                    'agent__realstar', 'agent__profstar', 'agent__certificated') \
             .select_related('district_level3', 'type', 'estate', 'agent') \

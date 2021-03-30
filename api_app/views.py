@@ -69,7 +69,7 @@ def get_code_by_sms(request, tel):
             resp = DefaultResponse(*CODE_TOO_FREQUENCY)
         else:
             code = gen_mobile_code()
-            message = f'您的短信验证码是{code}'
+            message = f'您的短信验证码是{code},【软件开发】'
             send_sms_by_luosimao(tel, message=message)
             caches['default'].set(tel, code, timeout=120)
             resp = DefaultResponse(*MOBILE_CODE_SUCCESS)

@@ -1,6 +1,7 @@
 from abc import ABC
 
 from rest_framework.pagination import PageNumberPagination, CursorPagination
+from rest_framework.response import Response
 from rest_framework.throttling import SimpleRateThrottle
 from django_filters import filterset
 
@@ -40,3 +41,12 @@ class EstateFilterSet(filterset.FilterSet):
         model = Estate
         # 指定根据哪些字段搜索
         fields = ('name', 'minhot', 'maxhot', 'dist')
+
+
+class IZFResponse(Response):
+    def __init__(self, code=10000, message='操作成功', data=None, status=None,
+                 template_name=None, headers=None, exception=False, content_type=None):
+        _data = {'code': code, 'message': message}
+        if data:
+            _data.update(data)
+        super().__init__(_data, status, template_name, headers, exception, content_type)

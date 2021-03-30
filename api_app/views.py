@@ -22,7 +22,7 @@ from common.utils import gen_mobile_code, send_sms_by_luosimao, to_md5_hex, get_
 from izufang.settings import SECRET_KEY
 
 
-@api_view(('GET', ))
+@api_view(('GET',))
 def get_code_by_sms(request, tel):
     """获取短信验证码"""
     if check_tel(tel):
@@ -39,7 +39,7 @@ def get_code_by_sms(request, tel):
     return resp
 
 
-@api_view(('POST', ))
+@api_view(('POST',))
 def login(request):
     """登录（获取用户身份令牌）"""
     username = request.data.get('username')
@@ -78,21 +78,13 @@ def login(request):
     return resp
 
 
-@cache_page(timeout=365 * 86400)
-@api_view(('GET', ))
-def get_provinces(request):
-    """获取省级行政单位"""
-    queryset = District.objects.filter(parent__isnull=True)\
-        .only('name')
-    serializer = DistrictSimpleSerializer(queryset, many=True)
-    return Response({
-        'code': 10000,
-        'message': '获取省级行政区域成功',
-        'results': serializer.data
-    })
+@method_decorator(decorator=cache_page(timeout=86400), name='get')
+class ProvincesView(ListAPIView):
+    queryset = District.objects.filter(parent__isnull=True).only('name')
+    serializer_class = DistrictSimpleSerializer(queryset, many=True)
 
 
-@api_view(('GET', ))
+@api_view(('GET',))
 def get_district(request, distid):
     """获取地区详情"""
     redis_cli = get_redis_connection()
@@ -100,7 +92,7 @@ def get_district(request, distid):
     if data:
         data = ujson.loads(data)
     else:
-        district = District.objects.filter(distid=distid)\
+        district = District.objects.filter(distid=distid) \
             .defer('parent').first()
         data = DistrictDetailSerializer(district).data
         redis_cli.set(f'zufang:district:{distid}', ujson.dumps(data), ex=900)
@@ -190,8 +182,8 @@ class EstateViewSet(ModelViewSet):
         if self.action == 'list':
             queryset = self.queryset.only('name')
         else:
-            queryset = self.queryset\
-                .defer('district__parent', 'district__ishot', 'district__intro')\
+            queryset = self.queryset \
+                .defer('district__parent', 'district__ishot', 'district__intro') \
                 .select_related('district')
         return queryset
 
@@ -210,28 +202,28 @@ class HouseInfoViewSet(ModelViewSet):
     serializer_class = HouseInfoDetailSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = HouseInfoFilterSet
-    ordering = ('-pubdate', )
+    ordering = ('-pubdate',)
     ordering_fields = ('pubdate', 'price')
 
-    @action(methods=('GET', ), detail=True)
+    @action(methods=('GET',), detail=True)
     def photos(self, request, pk):
         queryset = HousePhoto.objects.filter(house=self.get_object())
         return Response(HousePhotoSerializer(queryset, many=True).data)
 
     def get_queryset(self):
         if self.action == 'list':
-            return self.queryset\
+            return self.queryset \
                 .only('houseid', 'title', 'area', 'floor', 'totalfloor', 'price',
                       'mainphoto', 'priceunit', 'street', 'type',
-                      'district_level3__distid', 'district_level3__name')\
-                .select_related('district_level3', 'type')\
+                      'district_level3__distid', 'district_level3__name') \
+                .select_related('district_level3', 'type') \
                 .prefetch_related('tags')
-        return self.queryset\
+        return self.queryset \
             .defer('user', 'district_level2',
                    'district_level3__parent', 'district_level3__ishot', 'district_level3__intro',
                    'estate__district', 'estate__hot', 'estate__intro',
-                   'agent__realstar', 'agent__profstar', 'agent__certificated')\
-            .select_related('district_level3', 'type', 'estate', 'agent')\
+                   'agent__realstar', 'agent__profstar', 'agent__certificated') \
+            .select_related('district_level3', 'type', 'estate', 'agent') \
             .prefetch_related('tags')
 
     def get_serializer_class(self):

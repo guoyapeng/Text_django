@@ -200,6 +200,7 @@ class HouseInfoViewSet(ModelViewSet):
     """房源视图集"""
     queryset = HouseInfo.objects.all()
     serializer_class = HouseInfoDetailSerializer
+
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = HouseInfoFilterSet
     ordering = ('-pubdate',)

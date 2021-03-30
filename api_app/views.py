@@ -22,23 +22,6 @@ from common.utils import gen_mobile_code, send_sms_by_luosimao, to_md5_hex, get_
 from izufang.settings import SECRET_KEY
 
 
-@api_view(('GET',))
-def get_code_by_sms(request, tel):
-    """获取短信验证码"""
-    if check_tel(tel):
-        if caches['default'].get(tel):
-            resp = DefaultResponse(*CODE_TOO_FREQUENCY)
-        else:
-            code = gen_mobile_code()
-            message = f'您的短信验证码是{code}，打死也不能告诉别人哟！【Python小课】'
-            send_sms_by_luosimao(tel, message=message)
-            caches['default'].set(tel, code, timeout=120)
-            resp = DefaultResponse(*MOBILE_CODE_SUCCESS)
-    else:
-        resp = DefaultResponse(*INVALID_TEL_NUM)
-    return resp
-
-
 @api_view(('POST',))
 def login(request):
     """登录（获取用户身份令牌）"""
@@ -75,6 +58,23 @@ def login(request):
             resp = DefaultResponse(*USER_LOGIN_FAILED)
     else:
         resp = DefaultResponse(*INVALID_LOGIN_INFO)
+    return resp
+
+
+@api_view(('GET',))
+def get_code_by_sms(request, tel):
+    """获取短信验证码"""
+    if check_tel(tel):
+        if caches['default'].get(tel):
+            resp = DefaultResponse(*CODE_TOO_FREQUENCY)
+        else:
+            code = gen_mobile_code()
+            message = f'您的短信验证码是{code}，打死也不能告诉别人哟！【Python小课】'
+            send_sms_by_luosimao(tel, message=message)
+            caches['default'].set(tel, code, timeout=120)
+            resp = DefaultResponse(*MOBILE_CODE_SUCCESS)
+    else:
+        resp = DefaultResponse(*INVALID_TEL_NUM)
     return resp
 
 

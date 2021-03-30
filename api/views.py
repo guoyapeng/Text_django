@@ -101,6 +101,21 @@ def get_provinced(request: HttpRequest, distid: int) -> HttpResponse:
     return Response(serializer)
 
 
+# 序列化：自定义。缓存：编程式方式二
+@api_view(("GET",))
+def districts(request: HttpRequest, distid: int) -> HttpResponse:
+    """ 编程式缓存的第二种实现方式。调用原生redis连接"""
+    redis_cli = get_redis_connection()
+    data = redis_cli.get(f'izufang:district:{distid}')
+    if data:
+        district = pickle.loads(data)
+    else:
+        district = District.objects.filter(distid=distid).first()
+        redis_cli.set(f'izufang:district:{distid}', pickle.dumps(district))
+    serializer = DistrictDetailSerializerd(district).data
+    return Response(serializer)
+
+
 # 类视图。查询所有。分页：默认分页
 class AgentView_L(ListAPIView):
     queryset = Agent.objects.all().only('name', 'tel', 'servstar')
@@ -240,21 +255,6 @@ class EstateViewSet(ReadOnlyModelViewSet):
 
     def get_serializer_class(self):
         return EstateDetailSerializer if self.action == 'retrieve' else EstateSimpleSerializer
-
-
-# 序列化：自定义。缓存：编程式方式二
-@api_view(("GET",))
-def districts(request: HttpRequest, distid: int) -> HttpResponse:
-    """ 编程式缓存的第二种实现方式。调用原生redis连接"""
-    redis_cli = get_redis_connection()
-    data = redis_cli.get(f'izufang:district:{distid}')
-    if data:
-        district = pickle.loads(data)
-    else:
-        district = District.objects.filter(distid=distid).first()
-        redis_cli.set(f'izufang:district:{distid}', pickle.dumps(district))
-    serializer = DistrictDetailSerializerd(district).data
-    return Response(serializer)
 
 
 """----------------------------------------业务代码实现---------------------------------------------"""

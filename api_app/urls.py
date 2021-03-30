@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.routers import SimpleRouter
 
-from api.views import get_provinces, get_district, HotCityView, \
+from api_app.views import get_provinces, get_district, HotCityView, \
     AgentViewSet, HouseTypeViewSet, EstateViewSet, TagViewSet, HouseInfoViewSet, get_code_by_sms, login
 
 urlpatterns = [

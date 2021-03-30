@@ -92,17 +92,6 @@ def get_provinces(request):
     })
 
 
-# @api_view(('GET', ))
-# def get_district(request, distid):
-#     """获取地区详情"""
-#     district = caches['default'].get(f'district:{distid}')
-#     if district is None:
-#         district = District.objects.filter(distid=distid).first()
-#         caches['default'].set(f'district:{distid}', district, timeout=900)
-#     serializer = DistrictDetailSerializer(district)
-#     return Response(serializer.data)
-
-
 @api_view(('GET', ))
 def get_district(request, distid):
     """获取地区详情"""

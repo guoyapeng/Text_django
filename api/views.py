@@ -257,5 +257,5 @@ class EstateViewSet(ReadOnlyModelViewSet):
         return EstateDetailSerializer if self.action == 'retrieve' else EstateSimpleSerializer
 
 
-"""----------------------------------------业务代码实现---------------------------------------------"""
+"""----------------------------------------功能代码实现---------------------------------------------"""
 

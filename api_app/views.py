@@ -70,7 +70,8 @@ def get_code_by_sms(request, tel):
         else:
             code = gen_mobile_code()
             message = f'您的短信验证码是{code},【软件开发】'
-            send_sms_by_luosimao(tel, message=message)
+            # 使用delay()方式去执行且参数是没有变化
+            send_sms_by_luosimao.delay(tel, message=message)
             caches['default'].set(tel, code, timeout=120)
             resp = DefaultResponse(*MOBILE_CODE_SUCCESS)
     else:

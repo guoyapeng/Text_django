@@ -15,6 +15,7 @@ import requests
 from PIL.Image import Image
 
 from common.consts import EXECUTOR
+from izufang import app
 
 
 def get_ip_address(request):
@@ -64,6 +65,7 @@ def gen_qrcode(data):
     return buffer.getvalue()
 
 
+@app.task  # 打@app.task装饰器的函数可以自动发现、在消息队列中异步执行
 def send_sms_by_luosimao(tel, message):
     """发送短信（调用螺丝帽短信网关）"""
     resp = requests.post(

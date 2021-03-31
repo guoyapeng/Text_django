@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'api',
     'api_app',
     'common',
+    'django_celery_results'
 ]
 
 MIDDLEWARE = [

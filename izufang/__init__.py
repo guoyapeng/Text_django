@@ -13,7 +13,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'izufang.settings')
 
 # 2. 创建对象
 app = celery.Celery('izufang',
-                    broker='redis://127.0.0.1:6379/1',
+                    broker='amqp://gyp:gyp@127.0.0.1:5672/ivhost',
                     backend='redis://127.0.0.1:6379/2')
 
 # 3. 读取配置文件

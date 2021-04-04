@@ -19,6 +19,9 @@ app = celery.Celery('izufang',
 
 """定时任务配置"""
 app.conf.update(
+    accept_content=['json', 'pickle', 'msgpack'],
+    task_serializer='pickle',
+    result_serializer='json',
     # 设置时区要和settings中保持一致
     timezone=settings.TIME_ZONE,
     enable_utc=True,

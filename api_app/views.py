@@ -1,4 +1,6 @@
 import datetime
+import os
+import uuid
 
 import jwt
 from django.core.cache import caches
@@ -18,8 +20,24 @@ from api_app.consts import *
 from api_app.helpers import EstateFilterSet, HouseInfoFilterSet, check_tel, DefaultResponse
 from api_app.serializers import *
 from common.models import District, Agent, HouseType, Tag, User, LoginLog
-from common.utils import gen_mobile_code, send_sms_by_luosimao, to_md5_hex, get_ip_address
+from common.utils import gen_mobile_code, send_sms_by_luosimao, to_md5_hex, get_ip_address, upload_stream_to_qiniu
 from izufang.settings import SECRET_KEY
+
+
+# 前端没有实现，该接口未测试
+@api_view(('POST',))
+def upload_house_photo(request):
+    file_obj = request.FILES.get(('mainphoto'))
+    filename = f'{uuid.uuid4().hex}{os.path.splitext(file_obj.name)[1]}'
+    upload_stream_to_qiniu.delay(file_obj.file, filename, len(file_obj))
+    photo = HousePhoto()
+    photo.path = f'http://q69nr46pe.bkt.clouddn.com/{filename}'
+    photo.ismain = True  # 数据库中暂无该字段
+    photo.save()
+    return DefaultResponse(*FILE_UPLOAD_SUCCESS, data={
+        'photoid': photo.photoid,
+        'url': photo.path
+    })
 
 
 @api_view(('POST',))

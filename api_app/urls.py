@@ -2,7 +2,8 @@ from django.urls import path
 from rest_framework.routers import SimpleRouter
 
 from api_app.views import get_district, HotCityView, \
-    AgentViewSet, HouseTypeViewSet, EstateViewSet, TagViewSet, HouseInfoViewSet, get_code_by_sms, login, ProvincesView
+    AgentViewSet, HouseTypeViewSet, EstateViewSet, TagViewSet, HouseInfoViewSet, get_code_by_sms, login, ProvincesView, \
+    UserViewSet
 
 urlpatterns = [
     path('token/', login),
@@ -20,4 +21,5 @@ router.register('estates', EstateViewSet)
 router.register('agents', AgentViewSet)
 router.register('tags', TagViewSet)
 router.register('houseinfos', HouseInfoViewSet)
+router.register('users', UserViewSet)
 urlpatterns += router.urls

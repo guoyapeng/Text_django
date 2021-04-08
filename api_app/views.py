@@ -40,6 +40,19 @@ def upload_house_photo(request):
     })
 
 
+# 注册接口
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return UserCreateSerializer
+        elif self.action == 'update':
+            return UserUpdateSerializer
+        return UserSimpleSerializer
+
+
+# 登陆接口。
 @api_view(('POST',))
 def login(request):
     """登录（获取用户身份令牌）"""
@@ -53,6 +66,7 @@ def login(request):
             Q(email=username, password=password)
         ).first()
         if user:
+            # roles = RoleSimpleSerializer(user.roles.all(), many=True).data
             # 用户登录成功通过JWT生成用户身份令牌
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
@@ -83,14 +97,15 @@ def login(request):
 def get_code_by_sms(request, tel):
     """获取短信验证码"""
     if check_tel(tel):
-        if caches['default'].get(tel):
+        if caches['default'].get(f'{tel}:block'):
             resp = DefaultResponse(*CODE_TOO_FREQUENCY)
         else:
             code = gen_mobile_code()
             message = f'您的短信验证码是{code},【软件开发】'
             # 使用delay()方式去执行且参数是没有变化
             send_sms_by_luosimao.delay(tel, message=message)
-            caches['default'].set(tel, code, timeout=120)
+            caches['default'].set(f'{tel}:block', code, timeout=120)   # 阻止一定时间内禁止重发
+            caches['default'].set(f'{tel}:valid', code, timeout=1800)  # 设置验证码的有效时间段
             resp = DefaultResponse(*MOBILE_CODE_SUCCESS)
     else:
         resp = DefaultResponse(*INVALID_TEL_NUM)

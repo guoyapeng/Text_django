@@ -17,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api_app.consts import *
-from api_app.helpers import EstateFilterSet, HouseInfoFilterSet, check_tel, DefaultResponse
+from api_app.helpers import EstateFilterSet, HouseInfoFilterSet, check_tel, DefaultResponse, LoginRequiredAuthentication
 from api_app.serializers import *
 from common.models import District, Agent, HouseType, Tag, User, LoginLog
 from common.utils import gen_mobile_code, send_sms_by_luosimao, to_md5_hex, get_ip_address, upload_stream_to_qiniu
@@ -211,6 +211,9 @@ class EstateViewSet(ModelViewSet):
     filterset_class = EstateFilterSet
     ordering = '-hot'
     ordering_fields = ('district', 'hot', 'name')
+
+    # 为楼盘添加认证类。先认证用户是否登陆,再做后续操作
+    authentication_classes = (LoginRequiredAuthentication, )
 
     def get_queryset(self):
         if self.action == 'list':

@@ -1,10 +1,15 @@
+import jwt
 from django.db.models import Q
+from jwt import InvalidTokenError
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.pagination import PageNumberPagination, CursorPagination
 from django_filters import filterset
 from rest_framework.response import Response
 
 from api_app.consts import TEL_PATTERN
-from common.models import Estate, HouseInfo
+from common.models import Estate, HouseInfo, User
+from izufang.settings import SECRET_KEY
 
 
 def check_tel(tel):
@@ -67,3 +72,21 @@ class HouseInfoFilterSet(filterset.FilterSet):
     class Meta:
         model = HouseInfo
         fields = ('title', 'minprice', 'maxprice', 'minarea', 'maxarea', 'type', 'district')
+
+
+class LoginRequiredAuthentication(BaseAuthentication):
+    """登录认证"""
+
+    # 如果用户身份验证成功需要返回一个二元组(user, token)
+    def authenticate(self, request):
+        token = request.META.get('HTTP_TOKEN')
+        if token:
+            try:
+                payload = jwt.decode(token, SECRET_KEY)
+                user = User()
+                user.userid = payload['data']['userid']
+                user.is_authenticated = True
+                return user, token
+            except InvalidTokenError:
+                raise AuthenticationFailed('无效的令牌或令牌已过期')
+        raise AuthenticationFailed('请提供用户身份令牌')

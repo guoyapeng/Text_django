@@ -73,7 +73,7 @@ def login(request):
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
                 'data': {'userid': user.userid, }
             }
-            token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode()
+            token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').encode()
             with atomic():
                 current_time = timezone.now()
                 if not user.lastvisit or \

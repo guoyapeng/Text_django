@@ -17,7 +17,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api_app.consts import *
-from api_app.helpers import EstateFilterSet, HouseInfoFilterSet, check_tel, DefaultResponse, LoginRequiredAuthentication
+from api_app.helpers import EstateFilterSet, HouseInfoFilterSet, check_tel, DefaultResponse, \
+    LoginRequiredAuthentication, RbacPermission
 from api_app.serializers import *
 from common.models import District, Agent, HouseType, Tag, User, LoginLog
 from common.utils import gen_mobile_code, send_sms_by_luosimao, to_md5_hex, get_ip_address, upload_stream_to_qiniu
@@ -72,7 +73,7 @@ def login(request):
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
                 'data': {'userid': user.userid, }
             }
-            token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode()
+            token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').encode()
             with atomic():
                 current_time = timezone.now()
                 if not user.lastvisit or \
@@ -212,8 +213,12 @@ class EstateViewSet(ModelViewSet):
     ordering = '-hot'
     ordering_fields = ('district', 'hot', 'name')
 
-    # 为楼盘添加认证类。先认证用户是否登陆,再做后续操作
+    # 为楼盘添加认证类。先认证用户是否登陆再做后续操作
     authentication_classes = (LoginRequiredAuthentication, )
+
+    # 为楼盘添加授权类。只有被授权用户才可对该接口操作
+    permission_classes = (RbacPermission, )
+
 
     def get_queryset(self):
         if self.action == 'list':

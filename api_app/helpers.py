@@ -1,14 +1,15 @@
 import jwt
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from jwt import InvalidTokenError
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.pagination import PageNumberPagination, CursorPagination
 from django_filters import filterset
+from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
 
 from api_app.consts import TEL_PATTERN
-from common.models import Estate, HouseInfo, User
+from common.models import Estate, HouseInfo, User, Role
 from izufang.settings import SECRET_KEY
 
 
@@ -90,3 +91,22 @@ class LoginRequiredAuthentication(BaseAuthentication):
             except InvalidTokenError:
                 raise AuthenticationFailed('无效的令牌或令牌已过期')
         raise AuthenticationFailed('请提供用户身份令牌')
+
+
+class RbacPermission(BasePermission):
+
+    # 继承BasePermission重写has_permission方法。
+    # 返回True：有权限操作；返回False：无权限操作
+    def has_permission(self, request, view):
+        userid = request.user.get('userid')
+        # 先通过用户获取角色；再通过角色获取权限
+        roles = User.objects.filter(userid=userid).only('roles').prefetch_related(
+                Prefetch(
+                    'roles',
+                    queryset=Role.objects.all().prefetch_related('privs').only('privs'))
+        ).filter().roles.all()
+        for role in roles:
+            quersert = role.privs.filter(method=request.method, url=request.path)
+            if quersert:
+                return True
+        return False
